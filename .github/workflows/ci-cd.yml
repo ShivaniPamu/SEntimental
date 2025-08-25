@@ -61,14 +61,14 @@ jobs:
         [ -f metrics.md ] && cat metrics.md >> README.md
 
         # Embed loss plot image in README
-        [ -f loss_plot.png ] && echo -e "\n## Training/Validation Loss\n![Loss Plot](loss_plot.png)\n" >> README.md
+        [ -f models/loss_plot.png ] && echo -e "\n## Training/Validation Loss\n![Loss Plot](models/loss_plot.png)\n" >> README.md
 
         # Add all files conditionally
         [ -f confusion_matrix.csv ] && git add confusion_matrix.csv
         [ -f predictions.csv ] && git add predictions.csv
         [ -f confusion_matrix.png ] && git add confusion_matrix.png
         [ -f metrics.md ] && git add metrics.md
-        [ -f loss_plot.png ] && git add loss_plot.png
+        [ -f models/loss_plot.png ] && git add models/loss_plot.png
         [ -f models/logreg_model.pkl ] && git add models/logreg_model.pkl
         [ -f models/tfidf_vectorizer.pkl ] && git add models/tfidf_vectorizer.pkl
         [ -f models/train_history.pkl ] && git add models/train_history.pkl
