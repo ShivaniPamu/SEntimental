@@ -40,7 +40,7 @@ jobs:
       run: python train.py
 
     # 6️⃣ Evaluate Model (Test + Metrics + Plots)
-    - name: Evaluate Model
+    - name: Test Model
       run: python test_model.py
 
     # 7️⃣ Commit outputs and update README
