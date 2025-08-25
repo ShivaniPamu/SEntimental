@@ -41,7 +41,7 @@ jobs:
 
     # 6️⃣ Evaluate Model (Test + Metrics + Plots)
     - name: Evaluate Model
-      run: python evaluate_model.py
+      run: python test_model.py
 
     # 7️⃣ Commit outputs and update README
     - name: Commit outputs
