@@ -105,4 +105,11 @@ plt.legend()
 plt.grid(True)
 plt.savefig("loss_plot.png")
 
-print("Model, vectorizer, loss CSV, and loss plot saved in 'models/' folder.")
+# -------------------------------
+# Save training history for test_model.py
+# -------------------------------
+history = {"train_loss": train_losses, "test_loss": test_losses}
+with open("models/train_history.pkl", "wb") as f:
+    pickle.dump(history, f)
+
+print("Model, vectorizer, loss CSV, loss plot, and train history saved in 'models/' folder.")
