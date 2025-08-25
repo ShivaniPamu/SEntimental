@@ -12,5 +12,5 @@
 - F1-score: 0.8488
 
 ## Training/Validation Loss
-![Loss Plot](loss_plot.png)
+![Loss Plot](models/loss_plot.png)
 
