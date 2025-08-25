@@ -29,7 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade setuptools wheel
         pip install -r requirements.txt
-        pip install matplotlib seaborn tabulate
+        pip install matplotlib seaborn tabulate imbalanced-learn
 
     # 4️⃣ Optional: list repo files
     - name: List repo files
@@ -40,11 +40,11 @@ jobs:
       run: python train.py
 
     # 6️⃣ Evaluate Model (Test + Metrics + Plots)
-    - name: Test Model
+    - name: Evaluate Model
       run: python test_model.py
 
     # 7️⃣ Commit outputs and update README
-    - name: Commit outputs and update README
+    - name: Commit outputs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -53,8 +53,8 @@ jobs:
 
         # Overwrite README.md with latest metrics and confusion matrix
         echo "# Latest Model Results" > README.md
-        if [ -f confusion_matrix.md ]; then cat confusion_matrix.md >> README.md; fi
-        if [ -f metrics.md ]; then cat metrics.md >> README.md; fi
+        [ -f confusion_matrix.md ] && cat confusion_matrix.md >> README.md
+        [ -f metrics.md ] && cat metrics.md >> README.md
 
         # Add files conditionally to prevent workflow errors
         [ -f confusion_matrix.csv ] && git add confusion_matrix.csv
@@ -62,10 +62,11 @@ jobs:
         [ -f confusion_matrix.png ] && git add confusion_matrix.png
         [ -f metrics.md ] && git add metrics.md
         [ -f loss_plot.png ] && git add loss_plot.png
+        [ -f models/train_history.pkl ] && git add models/train_history.pkl
         git add README.md
 
         # Commit changes
-        git commit -m "Update README and outputs after training and evaluation" || echo "No changes to commit"
+        git commit -m "Update README, metrics, plots, and outputs" || echo "No changes to commit"
 
         # Push using GITHUB_TOKEN
         git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
