@@ -10,3 +10,7 @@
 - Precision: 0.8257
 - Recall: 0.8732
 - F1-score: 0.8488
+
+## Training/Validation Loss
+![Loss Plot](loss_plot.png)
+
