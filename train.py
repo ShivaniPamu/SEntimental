@@ -103,7 +103,7 @@ plt.ylabel("Log Loss")
 plt.title("Training and Testing Loss")
 plt.legend()
 plt.grid(True)
-plt.savefig("loss_plot.png")
+plt.savefig("models/loss_plot.png")
 
 # -------------------------------
 # Save training history for test_model.py
