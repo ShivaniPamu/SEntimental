@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout repository with proper token
+    # 1️⃣ Checkout repository
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
@@ -31,7 +31,7 @@ jobs:
         pip install -r requirements.txt
         pip install matplotlib seaborn tabulate imbalanced-learn
 
-    # 4️⃣ Optional: list repo files
+    # 4️⃣ List repo files (optional)
     - name: List repo files
       run: ls -R
 
@@ -39,7 +39,7 @@ jobs:
     - name: Train Model
       run: python train.py
 
-    # 6️⃣ Evaluate Model (Test + Metrics + Plots)
+    # 6️⃣ Evaluate Model (Metrics, Confusion Matrix, Loss Plots)
     - name: Evaluate Model
       run: python test_model.py
 
@@ -63,17 +63,19 @@ jobs:
         # Embed loss plot image in README
         [ -f loss_plot.png ] && echo -e "\n## Training/Validation Loss\n![Loss Plot](loss_plot.png)\n" >> README.md
 
-        # Add files conditionally to git
+        # Add all files conditionally
         [ -f confusion_matrix.csv ] && git add confusion_matrix.csv
         [ -f predictions.csv ] && git add predictions.csv
         [ -f confusion_matrix.png ] && git add confusion_matrix.png
         [ -f metrics.md ] && git add metrics.md
         [ -f loss_plot.png ] && git add loss_plot.png
+        [ -f models/logreg_model.pkl ] && git add models/logreg_model.pkl
+        [ -f models/tfidf_vectorizer.pkl ] && git add models/tfidf_vectorizer.pkl
         [ -f models/train_history.pkl ] && git add models/train_history.pkl
         git add README.md
 
         # Commit changes
-        git commit -m "Update README with confusion matrix, metrics, and loss plot" || echo "No changes to commit"
+        git commit -m "Update README, metrics, plots, and models" || echo "No changes to commit"
 
-        # Push changes
+        # Push to main
         git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
