@@ -1,0 +1,65 @@
+name: CI/CD - Sentiment Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1️⃣ Checkout repository with proper token
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    # 2️⃣ Set up Python
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    # 3️⃣ Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade setuptools wheel
+        pip install -r requirements.txt
+        pip install matplotlib seaborn tabulate
+
+    # 4️⃣ Optional: list files for debugging
+    - name: List repo files
+      run: ls -R
+
+    # 5️⃣ Train Model
+    - name: Train Model
+      run: python train.py
+
+    # 6️⃣ Test Model
+    - name: Test Model
+      run: python test_model.py
+
+    # 7️⃣ Commit outputs and update README
+    - name: Commit outputs and update README
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+        # Overwrite README.md with latest confusion matrix table
+        echo "# Latest Model Results" > README.md
+        cat confusion_matrix.md >> README.md
+
+        # Add CSV and plot files
+        git add confusion_matrix.csv predictions.csv confusion_matrix.png README.md
+
+        # Commit changes
+        git commit -m "Update README with latest confusion matrix and outputs" || echo "No changes to commit"
+
+        # Push using the GITHUB_TOKEN
+        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
