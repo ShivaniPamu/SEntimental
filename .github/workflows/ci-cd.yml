@@ -44,19 +44,26 @@ jobs:
       run: python test_model.py
 
     # 7️⃣ Commit outputs and update README
-    - name: Commit outputs
+    - name: Commit outputs and update README
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-        # Overwrite README.md with latest metrics and confusion matrix
+        # Start README
         echo "# Latest Model Results" > README.md
+
+        # Append confusion matrix
         [ -f confusion_matrix.md ] && cat confusion_matrix.md >> README.md
+
+        # Append metrics (Accuracy, Precision, Recall, F1)
         [ -f metrics.md ] && cat metrics.md >> README.md
 
-        # Add files conditionally to prevent workflow errors
+        # Embed loss plot image in README
+        [ -f loss_plot.png ] && echo -e "\n## Training/Validation Loss\n![Loss Plot](loss_plot.png)\n" >> README.md
+
+        # Add files conditionally to git
         [ -f confusion_matrix.csv ] && git add confusion_matrix.csv
         [ -f predictions.csv ] && git add predictions.csv
         [ -f confusion_matrix.png ] && git add confusion_matrix.png
@@ -66,7 +73,7 @@ jobs:
         git add README.md
 
         # Commit changes
-        git commit -m "Update README, metrics, plots, and outputs" || echo "No changes to commit"
+        git commit -m "Update README with confusion matrix, metrics, and loss plot" || echo "No changes to commit"
 
-        # Push using GITHUB_TOKEN
+        # Push changes
         git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
