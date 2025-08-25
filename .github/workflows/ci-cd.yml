@@ -1,13 +1,10 @@
-
-
-name: SEntimental
+name: SEntimental - CI/CD
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-    
 
 jobs:
   build-and-test:
@@ -34,7 +31,7 @@ jobs:
         pip install -r requirements.txt
         pip install matplotlib seaborn tabulate
 
-    # 4️⃣ Optional: list files for debugging
+    # 4️⃣ Optional: list repo files
     - name: List repo files
       run: ls -R
 
@@ -42,27 +39,28 @@ jobs:
     - name: Train Model
       run: python train.py
 
-    # 6️⃣ Test Model
-    - name: Test Model
-      run: python test_model.py
+    # 6️⃣ Evaluate Model (Test + Metrics + Plots)
+    - name: Evaluate Model
+      run: python evaluate_model.py
 
     # 7️⃣ Commit outputs and update README
-    - name: Commit outputs and update README
+    - name: Commit outputs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-        # Overwrite README.md with latest confusion matrix table
+        # Overwrite README.md with latest metrics and confusion matrix
         echo "# Latest Model Results" > README.md
-        cat confusion_matrix.md >> README.md
+        if [ -f confusion_matrix.md ]; then cat confusion_matrix.md >> README.md; fi
+        if [ -f metrics.md ]; then cat metrics.md >> README.md; fi
 
-        # Add CSV and plot files
-        git add confusion_matrix.csv predictions.csv confusion_matrix.png README.md
+        # Add all generated files
+        git add confusion_matrix.csv predictions.csv confusion_matrix.png metrics.md loss_plot.png README.md
 
         # Commit changes
-        git commit -m "Update README with latest confusion matrix and outputs" || echo "No changes to commit"
+        git commit -m "Update README and outputs after training and evaluation" || echo "No changes to commit"
 
-        # Push using the GITHUB_TOKEN
+        # Push using GITHUB_TOKEN
         git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
