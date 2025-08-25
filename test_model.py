@@ -1,5 +1,5 @@
 # ===============================
-# evaluate_model.py
+# test_model.py
 # ===============================
 
 import pandas as pd
@@ -91,6 +91,7 @@ cm_md = cm_df.to_markdown()
 with open("confusion_matrix.md", "w") as f:
     f.write("## Confusion Matrix\n\n")
     f.write(cm_md)
+
 f_metrics = f"## Metrics\n\n- Accuracy: {acc:.4f}\n- Precision: {prec:.4f}\n- Recall: {rec:.4f}\n- F1-score: {f1:.4f}\n"
 with open("metrics.md", "w") as f:
     f.write(f_metrics)
@@ -106,19 +107,21 @@ plt.title("Confusion Matrix")
 plt.savefig("confusion_matrix.png")
 
 # -------------------------------
-# (Optional) Save training/testing loss plot
+# Plot training/testing loss if available
 # -------------------------------
-# If you saved history during training, load and plot:
-if os.path.exists("models/train_history.pkl"):
-    with open("models/train_history.pkl", "rb") as f:
+history_path = "models/train_history.pkl"
+if os.path.exists(history_path):
+    with open(history_path, "rb") as f:
         history = pickle.load(f)
-    plt.figure()
-    plt.plot(history['train_loss'], label='train_loss')
-    plt.plot(history['val_loss'], label='val_loss')
+    
+    plt.figure(figsize=(8,6))
+    plt.plot(history['train_loss'], label='Train Loss')
+    plt.plot(history['test_loss'], label='Test Loss')
     plt.xlabel("Epochs")
-    plt.ylabel("Loss")
+    plt.ylabel("Log Loss")
+    plt.title("Training and Testing Loss")
     plt.legend()
-    plt.title("Training/Validation Loss")
+    plt.grid(True)
     plt.savefig("loss_plot.png")
 
 print("Confusion matrix, metrics, predictions, and plots saved successfully!")
