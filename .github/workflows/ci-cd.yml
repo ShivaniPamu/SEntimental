@@ -44,7 +44,7 @@ jobs:
       run: python test_model.py
 
     # 7️⃣ Commit outputs and update README
-    - name: Commit outputs
+    - name: Commit outputs and update README
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -56,8 +56,13 @@ jobs:
         if [ -f confusion_matrix.md ]; then cat confusion_matrix.md >> README.md; fi
         if [ -f metrics.md ]; then cat metrics.md >> README.md; fi
 
-        # Add all generated files
-        git add confusion_matrix.csv predictions.csv confusion_matrix.png metrics.md loss_plot.png README.md
+        # Add files conditionally to prevent workflow errors
+        [ -f confusion_matrix.csv ] && git add confusion_matrix.csv
+        [ -f predictions.csv ] && git add predictions.csv
+        [ -f confusion_matrix.png ] && git add confusion_matrix.png
+        [ -f metrics.md ] && git add metrics.md
+        [ -f loss_plot.png ] && git add loss_plot.png
+        git add README.md
 
         # Commit changes
         git commit -m "Update README and outputs after training and evaluation" || echo "No changes to commit"
